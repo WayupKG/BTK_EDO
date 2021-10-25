@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="ru">
+
+<head>
+
+	<title>{% block title %}Бишкекский Технический Колледж - Электронный документооборот{% endblock title %}</title>
+	
+	{% include 'Base/head.html' %}
+
+	{% block link %}{% endblock link %}
+
+</head>
+
+<body class="bg-theme bg-theme1">
+
+    <!-- Start wrapper-->
+    <div id="wrapper">
+
+		<!--Start topbar header-->
+		{% include 'Base/menu.html' %}
+		<!--End topbar header-->
+		
+		<!--Start topbar header-->
+		{% include 'Base/header.html' %}
+		<!--End topbar header-->
+
+		<div class="clearfix"></div>
+		<div class="content-wrapper">
+			<div class="container-fluid">
+
+			{% block content %}{% endblock content %}
+
+			<!--start overlay-->
+			<div class="overlay toggle-menu"></div>
+			<!--end overlay-->
+
+			</div>
+			<!-- End container-fluid-->
+		</div>
+		<!--End content-wrapper-->
+
+		<!--Start Back To Top Button-->
+		<a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i> </a>
+		<!--End Back To Top Button-->
+
+		<!--Start footer-->
+		<footer class="footer">
+			<div class="container">
+				<div class="text-center">
+					© СПУЗ «Бишкекский Технический Колледж» Официальный сайт <a href="https://btk.kg/" target="_blank">www.btk.kg</a>
+				</div>
+			</div>
+		</footer>
+		<!--End footer-->
+
+	</div>
+	<!--End wrapper-->
+
+	{% include 'Base/script.html' %}
+
+	{% block script %}{% endblock script %}
+
+</body>
+
+</html>

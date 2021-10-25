@@ -1,0 +1,78 @@
+<div class="tab-pane" id="reply">
+    {% if movement.is_send_reply %}
+        <form method="post" enctype="multipart/form-data"> {% csrf_token %}
+            <div class="form-group reply_form_div m-auto text-center">
+                <label class="col-form-label form-control-label">Ответить на письмо {{  movement.is_send_reply  }}</label>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-12 form-group">
+                        <select class="form-control" name="appointment">
+                            {% if user.is_admin and movement.document.purposes == 'For_approval' %}
+                                <option value="I_approve">Утверждаю</option>
+                            {% elif movement.document.purposes == 'For_agreement' %}
+                                <option value="I_agree">Согласен</option>
+                                <option value="I_dont_agree">Не согласен</option>
+                            {% elif movement.document.purposes == 'To_be_executed' %}
+                                <option value="Accepted_for_execution">Принято к исполнению</option>
+                            {% elif movement.document.purposes == 'For_your_information' %}
+                                <option value="Noted">Принято к сведенью</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-12 form-group">
+                        <input type="file" name="files" id="files" class="form-control" multiple="" accept=".txt, .webp, .jpg, .jpeg, .png, .docx, .doc, .pdf, .zip, .rar, .xlsx, .xlsm, .xlsb, .xls, .csv">
+                    </div>
+                    <div class="col-12 form-group">
+                        <textarea name="body" cols="40" rows="10" class="form-control" required="" id="id_body"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-light px-5 font-weight-bold" style="font-size: 18px"><i class="fa fa-paper-plane-o "></i> Отправить</button>
+                </div>
+            </div>
+        </form>
+        
+    {% else %}
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-12 row m-auto">
+                {% for answer in answers %}
+                    <div class="card col-12">
+                        <div class="card-body">
+                            <div class="card-action" style='margin: 5px;'>
+                                {% if answer.status == 'To_accept' %}
+                                    <i class="fa fa-circle mr-1" style="font-size: 20px; color: #16b81b"></i>
+                                {% elif answer.status == 'Not_accepted' %}
+                                    <i class="fa fa-circle mr-1" style="font-size: 20px; color: #bf4343"></i>
+                                {% else %}
+                                    <i class="fa fa-circle mr-1" style="font-size: 20px; color: #daeb23"></i>
+                                {% endif %}
+                            </div>
+                            <div class="card-title mb-3"><h4>{{ answer.movement.responsible }}</h4></div>
+                            
+                            <div class="row">
+                                <div class="col-lg-8 col-md-8 col-12 answer_content">
+                                    <h6>Ответ - {{ answer.appointment_v }} </h6>
+                                    <p style='margin-bottom: 63px;'>{{ answer.description }}</p>
+                                    <div class="footer_purposes" style='width: 95%;'>
+                                        <hr>
+                                        <p>Отправлен - {{ answer.created }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-12">
+                                    <h6 class=""> Прикрепленные файлы <i class="fa fa-paperclip"></i></h6>
+                                    {% for file in answers_files %}
+                                        {% if file.reply == answer %}
+                                            <p class="mb-3">- <a href="{{ file.file.url }}" download style="font-size: 12px">{{ file.filename }}</a></p>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>

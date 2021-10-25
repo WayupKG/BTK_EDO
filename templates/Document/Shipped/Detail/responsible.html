@@ -1,0 +1,33 @@
+<div class="tab-pane" id="responsible">
+    <div class="table-responsive">
+        <table class="table table-hover table-striped">
+            <tr>
+                <th scope="col">Ф.И.О</th>
+                <th scope="col">Просмотр</th>
+                <th scope="col">Движение</th>
+                <th scope="col">Дата</th>
+            </tr>
+            <tbody>
+                {% for movement in movements %}
+                    <tr>
+                        <td>
+                            {% if movement.is_main_person %}
+                                <i class="fa fa-user mr-2"></i>
+                            {% endif %}
+                            {{ movement.responsible }}
+                        </td>
+                        <td>{% if movement.open_view %}Просмотрено{% else %}Не просмотрено{% endif %}</td>
+                        <td>{{ movement.status_v }}</td>
+                        <td>
+                            {% if movement.status == 'In_process' %}
+                                ---------
+                            {% else %}
+                                {{ movement.updated }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="row">
+    <div class="col-lg-7 col-12 document_content _left">
+        <h4 class=" mt-3 text-center">{{ doc.type_v }}</h5>
+        <div class="body_content px-3 mb-5">
+            {{ doc.body|safe  }}
+        </div>   
+        <div class="control_footer">
+            <div class="row footer_purposes">
+                <div class="col-12"><hr></div>
+                <div class="col-6 text-center">
+                    <a href="{{ doc.get_pdf_url }}" class="btn btn-light px-5 font-weight-bold" style="font-size: 16px">
+                        <i class="fa fa-file-pdf-o"></i> Посмотреть
+                    </a>
+                </div>
+                <div class="col-6 text-center">
+                    <a download href="{{ doc.get_pdf_url }}" class="btn btn-light px-5 font-weight-bold" style="font-size: 16px">
+                        <i class="fa fa-download"></i> Скачать
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5 col-12 ">
+        <h5 class="mt-3">Рассмотреть и назначить ответственное лицо<i class="ml-3 fa fa-pencil-square-o"></i></h5>
+        <form method="post" class="row">{% csrf_token %}
+            <div class="col-lg-6 col-12 mt-4">
+                <select name="employee" class="form-control" required {% if doc.is_editor_director == False %}disabled{% endif %}>
+                    {% if doc.responsible %}
+                        <option value="{{ doc.responsible.id }}">{{ doc.responsible.get_full_name }}</option>
+                    {% else %}
+                        <option value="False">-----------------</option>
+                    {% endif %}
+                    {% for employee in employees %}
+                        {% if employee != profile and employee.pk != doc.responsible.pk %}
+                            <option value="{{ employee.pk }}">{{ employee.get_full_name }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-6 col-12 mt-4">
+                <select name="reply" class="form-control" required {% if doc.is_editor_director == False %}disabled{% endif %}>
+                    {% if doc.status == 'Approved' or doc.status == 'Done' %}
+                        <option value="True">Утверждено</option>
+                    {% elif doc.status == 'Rejected' %}
+                        <option value="False">Отклонено</option>
+                    {% else %}
+                        <option value="True">Утвердить</option>
+                        <option value="False">Отклонить</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="col-12 mt-4">
+                {% if doc.is_editor_director == False %}
+                    <div class="card">
+                        <div class="card-body">
+                            {% if doc.status == 'Approved' or doc.status == 'Done' %}
+                                {% for message in doc.messages.all %}
+                                    {% if message.is_main %}
+                                        <p>{{ message.message }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% elif doc.status == 'Rejected' %}
+                                {% for message in doc.messages.all %}
+                                    {% if message.is_main == False %}
+                                        <p>{{ message.message }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <textarea name="message" id="message_body" class="form-control" rows="10"></textarea>
+                {% endif %}
+            </div>
+            <div class="col-12 mt-4 text-center">
+            {% if doc.is_editor_director %}
+                <button type="submit" name="form_btn" value="document" class="btn btn-light px-5 font-weight-bold" style="font-size: 18px"><i class="fa fa-paper-plane-o "></i> Отправить</button>
+            {% endif %}
+            {% if responsible %}
+                {% if doc.is_editor_responsible %}
+                    <button type="submit" name="form_btn" value="done" class="btn btn-light px-5 font-weight-bold" style="font-size: 18px"> Выполнено</button>
+                {% endif %}
+            {% endif %}
+            </div>
+            
+        </form>
+    </div>
+    
+    <div class="col-lg-12">
+        <hr>
+        <h6 class="mt-4 d-md-block d-none">{{ doc.type_v }} был отправлен - {{ doc.created }} <span class="float-right">Обновлено - {{ doc.updated }}</span></h6>
+        <h6 class="mt-4 d-md-none d-block text-center">Отпр - {{ doc.created }} <br>Обно - {{ doc.updated }}</h6>
+    </div>
+</div>

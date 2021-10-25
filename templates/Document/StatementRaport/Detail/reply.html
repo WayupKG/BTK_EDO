@@ -1,0 +1,48 @@
+<div class="tab-pane" id="reply">
+    {% if movement.is_open_reply %}
+        <form method="post" enctype="multipart/form-data"> {% csrf_token %}
+            <div class="form-group reply_form_div m-auto text-center">
+                <label class="col-form-label form-control-label">Ответить на письмо</label>
+                <div class="form-group">
+                    <select class="form-control" name="appointment">
+                        {% if user.account.is_admin %}
+                            <option value="Утверждаю">Утверждаю</option>
+                        {% endif %}
+                        <option value="Согласен">Согласен</option>
+                        <option value="Не согласен">Не согласен</option>
+                        <option value="Принято к исполнению">Принято к исполнению</option>
+                        <option value="Принято к сведенью">Принято к сведенью</option>
+                    </select>
+                </div>
+                {% if user.account.is_admin %}
+                    <div class="form-group">
+                        <select name="redirect" class="form-control" required>
+                            {% for staff in staffs %}
+                                {% if staff != user.profile %}
+                                    <option value="{{ staff.pk }}">{{ staff.get_full_name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+                {% if movement.document.type == 'Document' %}
+                    <div class="form-group">
+                        <textarea name="body" rows="7" class="form-control" placeholder="Описания (не обязательно)"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="MAX_FILE_SIZE" value="300"/>
+                        <input type="file" name="files" class="form-control" multiple accept=".txt, .webp, .jpg, .jpeg, .png, .docx, .doc, .pdf, .zip, .rar, .xlsx, .xlsm, .xlsb, .xls, .csv">
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-light px-5 font-weight-bold" style="font-size: 18px"><i class="fa fa-paper-plane-o "></i> Отправить</button>
+                </div>
+            </div>
+        </form>
+    {% else %}
+        <div class="form-group w-50 m-auto text-center">
+            <label class="col-form-label form-control-label">Ответ был отправлен</label>
+            <p>Вы не можете изменить текущий ответ </p>
+        </div>
+    {% endif %}
+</div>

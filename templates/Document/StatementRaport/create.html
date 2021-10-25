@@ -1,0 +1,58 @@
+{% extends 'Base/base.html' %}
+{% load static %}
+
+{% block title %}Написать письмо{% endblock title %}
+
+{% block content %}
+<div class="row mt-3">
+    <div class="col-lg-8 m-auto">
+        <div class="card">
+            <div class="card-body">
+                <form enctype="multipart/form-data" method="POST">{% csrf_token %}
+                    <div class="row">
+                        <div class="form-group col-lg-7">
+                            <label for="director">Ответственный:</label>
+                            <select name="director" id='director' class="form-control" required>
+                                {% for director in directors %}
+                                    <option value="{{ director.pk }}">{{ director.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-5">
+                            <label for="StatementRaport">Тип документа:</label>
+                            <select name="StatementRaport" id='StatementRaport' class="form-control" required>
+                                    <option value="Statement">Заявление</option>
+                                    <option value="Raport">Рапорт</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form.body.label_tag }}
+                        {{ form.body }}
+                    </div>
+                    <div class="form-group text-center pt-3">
+                        <button type="submit" name="form_btn" value="document"
+                            class="btn btn-light px-5 font-weight-bold" style="font-size: 18px"><i
+                                class="fa fa-paper-plane-o "></i> Отправить</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--End Row-->
+
+
+{% endblock content %}
+
+{% block script %}
+<style>
+.django-ckeditor-widget, #cke_id_body {
+    display: block;
+    width: 100% !important;
+}
+</style>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor-init.js" %}"></script>
+<script type="text/javascript" src="{% static "ckeditor/ckeditor/ckeditor.js" %}"></script>
+{% endblock script %}

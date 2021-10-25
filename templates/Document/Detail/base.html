@@ -1,0 +1,70 @@
+{% extends 'Base/base.html' %}
+{% load static %}
+
+{% block title %}{{ movement.document.name }}{% endblock title %}
+
+{% block content %}
+<div class="row mt-3">
+    <div class="col-lg-12 m-auto">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <span class='status mr-3'>
+                        {% if movement.document.status == 'Done' %}
+                            <i class="fa fa-circle mr-1" style="font-size: 20px; color: #16b81b"></i>
+                        {% elif movement.document.status == 'Not_completed' %}
+                            <i class="fa fa-circle mr-1" style="font-size: 20px; color: #bf4343"></i>
+                        {% else %}
+                            <i class="fa fa-circle mr-1" style="font-size: 20px; color: #daeb23"></i>
+                        {% endif %}
+                    </span>
+                    <span class="author">{{ movement.document.author }}</span>
+                    
+                    <div class="card-action">
+                         {{ movement.document.number }}
+                    </div>
+                </div>
+                <hr>
+                <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
+
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#document" data-toggle="pill" class="nav-link active"><i class="fa fa-file"></i> <span class="hidden-xs">Документ</span></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#responsible" data-toggle="pill" class="nav-link"><i class="fa fa-group"></i> <span class="hidden-xs">Назначенные сотрудники</span></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#reply" data-toggle="pill" class="nav-link"><i class="icon-note"></i> <span class="hidden-xs">Ответить</span></a>
+                    </li>
+                    
+                </ul>
+
+                <div class="tab-content pt-3 pb-0">
+
+                    {% include 'Document/Detail/document.html' %}
+                    
+                    {% include 'Document/Detail/responsible.html' %}
+
+                    {% include 'Document/Detail/reply.html' %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End Row-->
+<script src="{% static 'js/multiselect.min.js' %}"></script>
+<script>
+	document.multiselect('#responsible')
+		.setCheckBoxClick("checkboxAll", function(target, args) {
+			console.log("Флажок Выбрать Все был нажат и получил значение ", args.checked);
+		})
+		.setCheckBoxClick("1", function(target, args) {
+			console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
+		});
+
+</script>
+{% endblock content %}

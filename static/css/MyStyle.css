@@ -1,0 +1,175 @@
+.changeCircleSize {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 10px 0;
+    color: #fff;
+    transition: background .3s;
+}
+.changeCircleSize:hover {
+    background-color: rgba(0,0,0,.2);;
+}
+
+/* DataTable ----------- */
+
+#DataTable td {
+    padding: 0 !important; 
+}
+#DataTable td a {
+    display: block;
+    padding: 15px 10px !important;
+}
+#DataTable_wrapper {
+    padding-top: 10px !important;
+}
+#DataTable {
+    margin-bottom: 30px;
+}
+
+#DataTable_length {
+    display: inline-block !important;
+    width: 50% !important;
+}
+#DataTable_wrapper .dt-buttons {
+    width: 30% !important;
+}
+#DataTable_filter {
+    display: inline-block;
+    width: 70%;
+    text-align: right;
+    padding-right: 5px;
+}
+
+#DataTable_info {
+    display: inline-block;
+    width: 35%;
+}
+
+#DataTable_paginate {
+    display: inline-block;
+    width: 65%;
+    text-align: right;
+}
+
+#DataTable_length select {
+    padding: 5px;
+    border-radius: 3px;
+  border: 0px solid #e5eaef;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff !important;
+}
+
+#DataTable_length select:focus{
+  background-color: rgba(0,0,0,.2);
+}
+
+
+#DataTable_filter input{
+    margin-left: 5px;
+    padding: 3px;
+    font-size: 16px;
+    border: 0 solid #e5eaef;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff !important;
+}
+
+#DataTable_filter input:focus{
+  background-color: rgba(0,0,0,.2);
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.45)
+}
+
+/* paginate_button ------- */
+#DataTable_paginate {
+    height: 30px !important;
+}
+
+.paginate_button {
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.previous {
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+}
+.next {
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+.current {
+   	background-color: rgba(255, 255, 255, 0.25);
+}
+
+.disabled {
+    cursor: no-drop !important;
+}
+
+
+/* datatables_buttons_info ----------  */
+#datatables_buttons_info {
+    position: absolute !important;
+    display: inline-block !important ;
+    width: 450px !important;
+    height: 150px !important;
+    top: 70px;
+    right: 25px;
+    background-color: #07223E !important;
+    text-align: center;
+    border: 2px solid #103c6c;
+    border-radius: 10px;
+}
+
+#datatables_buttons_info h2 {
+    margin-top: 35px;
+    font-size: 28px !important;
+}
+
+.control_footer {
+    margin-bottom: 70px;
+}
+
+.footer_purposes {
+    position: absolute;
+    bottom:0;
+    width: 100%;
+}
+
+._left {
+    border-left: 1px solid rgba(255, 255, 255, 0.6) ;
+}
+
+.document_content, .answer_content {
+    border-right: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.reply_form_div {
+    width: 50% !important;
+}
+
+@media (max-width:768px){
+    .buttons-copy {display:none!important}
+    .buttons-print {display:none!important}
+    
+    .document_content p {
+        margin-bottom: 100px !important;
+    }
+    .document_content .row div {
+        text-align: center;
+    }
+    .document_content .row div span {
+        float: none !important;
+    }
+    .reply_form_div {
+        width: 100% !important;
+    }
+    .control_footer {margin-bottom: 90px;}
+    .control_footer .footer_purposes a {
+        font-size: 12px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+}

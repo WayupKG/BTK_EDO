@@ -1,0 +1,51 @@
+<div class="tab-pane" id="history_reply">
+    <div class="row">
+        {% for answer in answers %}
+            <form method="post" class="col-lg-6 col-md-6 col-12">{% csrf_token %}
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-action" style='margin: 5px;'>
+                            {% if answer.status == 'To_accept' %}
+                                <i class="fa fa-circle mr-1" style="font-size: 20px; color: #16b81b"></i>
+                            {% elif answer.status == 'Not_accepted' %}
+                                <i class="fa fa-circle mr-1" style="font-size: 20px; color: #bf4343"></i>
+                            {% else %}
+                                <i class="fa fa-circle mr-1" style="font-size: 20px; color: #daeb23"></i>
+                            {% endif %}
+                        </div>
+                        <div class="card-title mb-3"><h4>{{ answer.movement.responsible.get_full_name }}</h4></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-12 answer_content">
+                                <h6>Ответ - {{ answer.appointment_v }} </h6>
+                                <p style='margin-bottom: 63px;'>{{ answer.description }}</p>
+                                <div class="footer_purposes" style='width: 95%;'>
+                                    <hr>
+                                    <p>Отправил - {{ answer.created }}</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-12">
+                                <h6 class=""> Прикрепленные файлы <i class="fa fa-paperclip"></i></h6>
+                                {% for file in answers_files %}
+                                    {% if file.reply == answer %}
+                                        <p class="mb-3">- <a href="{{ file.file.url }}" download style="font-size: 12px">{{ file.filename }}</a></p>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% if answer.movement.status == 'In_process' and answer.status == 'Waiting' %}
+                                <div class="col-12 text-center">
+                                    <hr>
+                                    <input type="hidden" name="reply" value="{{ answer.pk }}">
+                                    <input type="hidden" name="movement" value="{{ answer.movement.pk }}">
+                                    <input type="hidden" name="document" value="{{ answer.movement.document.pk }}">
+                                    <button type="submit" name="accept" value="to_accept" class="btn btn-light px-5 font-weight-bold" style="font-size: 18px; width: 47%;"><i class="fa fa-paper-plane-o "></i> Принять</button>
+                                    <button type="submit" name="accept" value="not_accept" class="btn btn-light px-5 font-weight-bold" style="font-size: 18px; width: 47%;"><i class="fa fa-paper-plane-o "></i> Не принять</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        {% endfor %}
+    </div>
+</div>

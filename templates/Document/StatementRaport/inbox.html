@@ -1,0 +1,81 @@
+{% extends 'Base/base.html' %}
+{% load static %}
+
+{% block title %}Входящие Заявлении и Рапорты{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="DataTable">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="datatable-nosort">Номер</th>
+                                <th scope="col" class="datatable-nosort">Автор</th>
+                                <th scope="col" class="datatable-nosort">Руководитель</th>
+                                <th scope="col" class="datatable-nosort">Ответственный</th>
+                                <th scope="col" class="datatable-nosort">Тип документа</th>
+                                <th scope="col" class="datatable-nosort">Статус документа</th>
+                                <th scope="col" class="datatable-nosort">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if docs %}
+                                {% for doc in docs %}
+                                    {% if doc.is_open_view_responsible == False %}
+                                        <tr class='table-active'>
+                                            <td>
+                                                <a href="{% url 'remove_inbox_stat' slug=doc.slug %}">
+                                                    <i class="fa fa-circle mr-1" style="font-size: 12px; color: #0aa60f"></i>
+                                                    {{ doc.number }}
+                                                </a>
+                                            </td>
+                                            <td><a href="{% url 'remove_inbox_stat' slug=doc.slug %}">{{ doc.author }}</a></td>
+                                            <td><a href="{% url 'remove_inbox_stat' slug=doc.slug %}">{{ doc.director }}</a></td>
+                                            <td>
+                                                <a href="{% url 'remove_inbox_stat' slug=doc.slug %}">
+                                                    {{ doc.responsible }} 
+                                                </a>
+                                            </td>
+                                            <td><a href="{% url 'remove_inbox_stat' slug=doc.slug %}">{{ doc.type_v }}</a></td>
+                                            <td><a href="{% url 'remove_inbox_stat' slug=doc.slug %}">{{ doc.status_v }}</a></td>
+                                            <td><a href="{% url 'remove_inbox_stat' slug=doc.slug %}">{{ doc.created|date:'d-m-Y' }}</a></td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'detail-stat-view' slug=doc.slug %}">
+                                                <i class="mr-3" style="font-size: 12px"></i>
+                                                    {{ doc.number }}
+                                                </a>
+                                            </td>
+                                            <td><a href="{% url 'detail-stat-view' slug=doc.slug %}">{{ doc.author }}</a></td>
+                                            <td><a href="{% url 'detail-stat-view' slug=doc.slug %}">{{ doc.director }}</a></td>
+                                            <td>
+                                                <a href="{% url 'detail-stat-view' slug=doc.slug %}">
+                                                    {{ doc.responsible }}
+                                                </a>
+                                            </td>
+                                            <td><a href="{% url 'detail-stat-view' slug=doc.slug %}">{{ doc.type_v }}</a></td>
+                                            <td><a href="{% url 'detail-stat-view' slug=doc.slug %}">{{ doc.status_v }}</a></td>
+                                            <td><a href="{% url 'detail-stat-view' slug=doc.slug %}">{{ doc.created|date:'d-m-Y' }}</a></td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center">У вас пока нет новых писем</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

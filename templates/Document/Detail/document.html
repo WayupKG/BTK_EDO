@@ -1,0 +1,36 @@
+<div class="tab-pane active" id="document">
+    <div class="row">
+        <div class="col-lg-7 document_content">
+            <h5 class="mb-4 mt-3">{{ movement.document.name }}</h5>
+            <p class="text-justify" style="text-indent: 50px; margin-bottom: 90px;">
+                {{ movement.document.body|safe  }}
+            </p>
+
+            <div class="footer_purposes" style='width: 97%;'>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-5">Назначение - {{ movement.document.purposes_v }}</div>
+                    <div class="col-lg-7"><span class="float-right">Срок исполнения - {{ movement.document.end_date }}</span></div>
+                </div>
+            </div>            
+        </div>
+
+        <div class="col-lg-5">
+            <h5 class="mb-4 mt-3"> Прикрепленные файлы <i class="ml-3 fa fa-paperclip"></i></h5>
+            {% if files %}
+                <ol>
+                    {% for file in files %}
+                        <li class="mb-3"> <i class="fa fa-file"></i> <a href="{{ file.file.url }}" download>{{ file.filename }}</a></li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <p>Нет прикрепленного файла</p>
+            {% endif %}
+        </div>
+        <div class="col-lg-12">
+            <hr>
+                <h6 class="mt-4 d-md-block d-none">Документ был отправлен - {{ movement.document.created }} <span class="float-right">Обновлено - {{ movement.document.updated }}</span></h6>
+                <h6 class="mt-4 d-md-none d-block text-center">Отпр - {{ movement.document.created }} <br>Обно - {{ movement.document.updated }}</h6>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,55 @@
+{% extends 'Base/base.html' %}
+{% load static %}
+
+{% block title %}{{ doc.author }} {{ doc.type }}{% endblock title %}
+
+{% block content %}
+<div class="row mt-3">
+    <div class="col-lg-12 m-auto">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <span class='status mr-3'>
+                        {% if doc.status == 'Done' %}
+                            <i class="fa fa-circle mr-1" style="font-size: 20px; color: #16b81b"></i>
+                        {% elif doc.status == 'Not_completed' %}
+                            <i class="fa fa-circle mr-1" style="font-size: 20px; color: #bf4343"></i>
+                        {% else %}
+                            <i class="fa fa-circle mr-1" style="font-size: 20px; color: #daeb23"></i>
+                        {% endif %}
+                    </span>
+                    <span class="author">{{ doc.author }}</span>
+                    
+                    <div class="card-action">
+                         {{ doc.number }}
+                    </div>
+                </div>
+                <hr>
+
+                {% include 'Document/StatementRaport/Detail/document.html' %}
+                    
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--End Row-->
+<script src="{% static 'js/multiselect.min.js' %}"></script>
+<script>
+	document.multiselect('#responsible')
+		.setCheckBoxClick("checkboxAll", function(target, args) {
+			console.log("Флажок Выбрать Все был нажат и получил значение ", args.checked);
+		})
+		.setCheckBoxClick("1", function(target, args) {
+			console.log("Checkbox for item with value '1' was clicked and got value ", args.checked);
+		});
+
+</script>
+<style>
+.body_content p {
+    text-indent: 35px;
+    padding: 5px 0 !important;
+    margin: 0 !important;
+}
+</style>
+{% endblock content %}

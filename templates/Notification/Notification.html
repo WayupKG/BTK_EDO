@@ -1,0 +1,64 @@
+{% extends 'Base/base.html' %}
+{% load static %}
+
+{% block title %}Уведомление{% endblock title %}
+
+{% block content %}
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+			        <div class="table-responsive">
+              <table class="table table-hover" id="DataTable">
+                <thead>
+                  <tr>
+                    <th scope="col" class="w-75 datatable-nosort">Уведомление</th>
+                    <th scope="col" >Дата</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% if nots %}
+                        {% for notification in nots %}
+                            {% if notification.open_view %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'single_notification' pk=notification.pk obj_pk=notification.object_id %}">
+                                            <i class="mr-3" style="font-size: 12px; color: #0aa60f"></i>
+                                            {{ notification.body|truncatechars:120 }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'single_notification' pk=notification.pk obj_pk=notification.object_id %}">
+                                            {{ notification.created|date:'d-m-Y' }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'remove_notification' pk=notification.pk obj_pk=notification.object_id %}">
+                                            <i class="fa fa-circle mr-1" style="font-size: 12px; color: #0aa60f"></i>
+                                            {{ notification.body|truncatechars:120 }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'remove_notification' pk=notification.pk obj_pk=notification.object_id %}">
+                                            {{ notification.created|date:'d-m-Y' }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+
+                    {% else %}
+                        <tr><td colspan="2" class="text-center">У вас пока нет новых уведомлений</td></tr>
+                    {% endif %}
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div><!--End Row-->
+{% endblock content %}

@@ -1,0 +1,70 @@
+{% extends 'Base/base.html' %}
+{% load static %}
+
+{% block title %}Входящие документы{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="DataTable">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="datatable-nosort">Номер</th>
+                                <th scope="col" class="w-25 datatable-nosort">Ф.И.О</th>
+                                <th scope="col" class="w-75 datatable-nosort">Название документа</th>
+                                <th scope="col" class="datatable-nosort">Назначение</th>
+                                <th scope="col" class="datatable-nosort">Дата</th>
+                                <th scope="col" class="datatable-nosort">Срок</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if docs %}
+                                {% for doc in docs %}
+                                    {% if doc.open_view == False %}
+                                        <tr class='table-active'>
+                                            <td>
+                                                <a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">
+                                                    <i class="fa fa-circle mr-1" style="font-size: 12px; color: #0aa60f"></i>
+                                                    {{ doc.document.number }}
+                                                </a>
+                                            </td>
+                                            <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.author }}</a></td>
+                                            <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.name|truncatechars:80 }}</a></td>
+                                            <td class="text-center"><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.purposes_v }}</a></td>
+                                            <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.created|date:'d-m-Y' }}</a></td>
+                                            <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.end_date|date:'d-m-Y' }}</a></td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'detail-doc-view' slug=doc.document.slug %}">
+                                                <i class="mr-3" style="font-size: 12px"></i>
+                                                    {{ doc.document.number }}
+                                                </a>
+                                            </td>
+                                            <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.author }}</a></td>
+                                            <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.name|truncatechars:80 }}</a></td>
+                                            <td class="text-center"><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.purposes_v }}</a></td>
+                                            <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.created|date:'d-m-Y' }}</a></td>
+                                            <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.end_date|date:'d-m-Y' }}</a></td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">У вас пока нет новых писем</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
