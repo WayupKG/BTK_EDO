@@ -8,6 +8,7 @@ click==7.1.2
 click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.2.0
+cryptography==35.0.0
 cssselect2==0.4.1
 Django==3.2
 django-celery-beat==2.2.1
