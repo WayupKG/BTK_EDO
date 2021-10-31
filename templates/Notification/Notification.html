@@ -25,7 +25,7 @@
                                     <td>
                                         <a href="{% url 'single_notification' pk=notification.pk obj_pk=notification.object_id %}">
                                             <i class="mr-3" style="font-size: 12px; color: #0aa60f"></i>
-                                            {{ notification.body|truncatechars:120 }}
+                                            {{ notification.body|striptags|truncatechars:120 }}
                                         </a>
                                     </td>
                                     <td>
@@ -39,7 +39,7 @@
                                     <td>
                                         <a href="{% url 'remove_notification' pk=notification.pk obj_pk=notification.object_id %}">
                                             <i class="fa fa-circle mr-1" style="font-size: 12px; color: #0aa60f"></i>
-                                            {{ notification.body|truncatechars:120 }}
+                                            {{ notification.body|striptags|truncatechars:120 }}
                                         </a>
                                     </td>
                                     <td>

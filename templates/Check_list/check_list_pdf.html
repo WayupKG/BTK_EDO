@@ -16,13 +16,13 @@
             right: 0;
             width: 250px;
             height: 250px;
-            {% if check.status == 'Выполнено' %}
+            {% if check.status == 'Done' %}
                 background-image: url(../../static/images/5asdkf/hsadfjh/ndshjslsd/print/done.svg);
-            {% elif check.status == 'Не выполнено' %}
+            {% elif check.status == 'Not_completed' %}
                 background-image: url(../../static/images/5asdkf/hsadfjh/ndshjslsd/print/not_executed.svg);
             {% else %}
             {% endif %}
-        transform: rotate(-45deg);
+            transform: rotate(-45deg);
             background-repeat: no-repeat;
             opacity: 0.5;
             z-index: 1;
@@ -43,9 +43,9 @@
                 <p class="doc_p"><span>Аткаруу мөөнөтү</span><span class="float-right">{{ check.document.end_date }}</span></p>
                 <p class="doc_p"><span>Түзүү датасы</span><span class="float-right">{{ check.document.created|date }}</span></p>
                 <p class="doc_p"><span>Макамы</span><span class="float-right">
-                    {% if check.status == 'Выполнено' %}
+                    {% if check.status == 'Done' %}
                         Аткарылды
-                    {% elif check.status == 'Не выполнено' %}
+                    {% elif check.status == 'Not_completed' %}
                         Аткарылган жок
                     {% else %}
                         Белгисиз

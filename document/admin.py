@@ -24,7 +24,7 @@ class AdminStatement(admin.ModelAdmin):
 
 @admin.register(Document)
 class AdminDocument(admin.ModelAdmin):
-    list_display = ('number', 'author', 'name', 'created', 'updated')
+    list_display = ('number', 'author', 'name', 'status', 'created', 'updated')
     inlines = [MovementOfDocumentInline, FileDocumentInline]
 
 

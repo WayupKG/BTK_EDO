@@ -20,19 +20,34 @@ from .services import (
     )
 
 
-class InProcessManager(models.Manager):
+class DocumentInProcessManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='In_process').order_by('-created')
 
 
-class DoneManager(models.Manager):
+class DocumentDoneManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='Done').order_by('-created')
 
 
-class NotExecutedManager(models.Manager):
+class DocumentNotExecutedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='Not_completed').order_by('-created')
+
+
+class MovementInProcessManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(document__status='In_process').order_by('-created')
+
+
+class MovementDoneManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(document__status='Done').order_by('-created')
+
+
+class MovementNotExecutedManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(document__status='Not_completed').order_by('-created')
 
 
 class Statement(models.Model):
@@ -126,9 +141,9 @@ class Document(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
-    in_process = InProcessManager()
-    done = DoneManager()
-    not_executed = NotExecutedManager()
+    in_process = DocumentInProcessManager()
+    done = DocumentDoneManager()
+    not_executed = DocumentNotExecutedManager()
     
     def save(self, *args, **kwargs):
         super(Document, self).save(*args, **kwargs)
@@ -137,6 +152,9 @@ class Document(models.Model):
         super(Document, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
+        return reverse('detail-shipped-view', kwargs={'slug': self.slug})
+
+    def get_absolute_url_inbox(self):
         return reverse('detail-doc-view', kwargs={'slug': self.slug})
 
     def purposes_v(self):
@@ -186,9 +204,9 @@ class MovementOfDocument(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
-    in_process = InProcessManager()
-    done = DoneManager()
-    not_executed = NotExecutedManager()
+    in_process = MovementInProcessManager()
+    done = MovementDoneManager()
+    not_executed = MovementNotExecutedManager()
 
     def status_v(self):
         return dict(STATUS)[self.status]

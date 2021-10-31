@@ -1,17 +1,12 @@
-import time
-
 from core.celery import app
 
 from django.utils import timezone
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.conf import settings
 
 from employee.models import Profile
 from document.models import Document, MovementOfDocument, ReplyDocument, Statement
-from check_list.models import CheckList
 from notification.models import Notification
+from check_list.models import CheckList
+from home.tasks import send_mail
 
 
 @app.task
@@ -29,6 +24,17 @@ def create_notification(type: str, pk: int, author_pk: int, profile_pk: int, bod
 
 
 @app.task
+def create_check_list(doc_pk: int, author_pk: int, status: str):
+    doc = Document.objects.get(pk=doc_pk)
+    profile = Profile.objects.get(pk=author_pk)
+    update, create = CheckList.objects.get_or_create(document=doc, author=profile, 
+                                                     defaults={'document': doc, 'author': profile, 'status': status})
+    if not create:
+        update.status = status
+        update.save()
+
+
+@app.task
 def analiz_document(doc_pk, doc_number):
     document = Document.objects.get(pk=doc_pk, number=doc_number)
     movements = MovementOfDocument.objects.filter(document=document)
@@ -40,39 +46,40 @@ def analiz_document(doc_pk, doc_number):
     if count == movements.count():
         document.status = 'Done'
         document.save()
-        body = f''
+        create_check_list.delay(document.pk, document.author.pk, document.status)
+        body = f'Документ с номером {document.number}, было выполнено. Чтобы узнать подробно о документе нажмите на эту ссылку <br>'\
+               f'<a href="{document.get_absolute_url()}" class="btn btn-light px-3 mt-3 font-weight-bold" style="font-size: 15px">Подробно</a>'
         create_notification.delay('document', document.pk, document.author.pk, document.author.pk, body)
     return 
 
 
 @app.task
 def processing_document():
-    date_now = timezone.localtime().strftime("%d-%m-%Y")
-    documents = Document.objects.filter(status='In_process')
+    date_now = timezone.localtime()
+    documents = Document.objects.filter(status='In_process').select_related('author')
+    messages = [f'Дата - {timezone.localtime().strftime("%d-%m-%Y")}']
+    count_ = 1
     for document in documents:
-        if document.end_date.strftime("%d-%m-%Y") < date_now:
+        in_process, not_completed, done, is_main_person = 0, 0, 0, 'Errors'
+        if document.end_date.strftime("%d-%m-%Y") < date_now.strftime("%d-%m-%Y"):
             movements = MovementOfDocument.objects.filter(document=document)
             for movement in movements:
-                if movement.status == 'In_process':
-                    if movement.answers.all():
-                        for reply in movement.answers.all():
-                            movement.status = 'Выполнено' if reply.status == 'Выполнено' or reply.status == 'В ожидании' else 'Не выполнено'
-                    if not movement.answers.all():
-                        movement.status = 'Не выполнено'
-                if movement.is_main_person:
-                    if movement.appointment == 'Утверждаю' or movement.appointment == 'Согласен' or \
-                        movement.appointment == 'Принято к исполнению' or movement.appointment == 'Принято к сведению':
-                        document.status = 'Выполнено'
-                        movement.status = 'Выполнено'
-                    else:
-                        if movement.answers.all():
-                            for reply in movement.answers.all():
-                                movement.status = 'Выполнено' if reply.status == 'Выполнено' or reply.status == 'В ожидании' else 'Не выполнено'
-                                document.status = 'Выполнено' if reply.status == 'Выполнено' or reply.status == 'В ожидании' else 'Не выполнено'
-                        if not movement.answers.all():
-                            movement.status = 'Не выполнено'
-                            document.status = 'Не выполнено'
-                movement.save()
+                in_process += 1 if movement.status == 'In_process' else 0
+                not_completed += 1 if movement.status == 'Not_completed' else 0
+                done += 1 if movement.status == 'Done' else 0
+            is_main_person = movements.get(is_main_person=True).status
+            doc_status_was = document.status_v
+            if (in_process <= done >= not_completed) and is_main_person == 'Done':
+                document.status = 'Done'
+            else:
+                document.status = 'Not_completed'               
+            messages.append(f'{count_}) Номер: {document.number} - Статус документа был: {doc_status_was} - Изменено: {document.status_v()}')
             document.save()
-        time.sleep(3)
-
+            create_check_list.delay(document.pk, document.author.pk, document.status)
+            body = f'Отчет об обработке документа с номером {document.number}, истек срок документа.'\
+                   f'Чтобы узнать подробно о документе нажмите на эту ссылку <br>'\
+                   f'<a href="{document.get_absolute_url()}" class="btn btn-light px-3 mt-3 font-weight-bold" style="font-size: 16px">Подробно</a>'
+            create_notification.delay('document', document.pk, document.author.pk, document.author.pk, body)
+            count_ += 1
+    messages.append(f'Всего обработано "{count_}" документов, обработка документов заняло {timezone.localtime() - date_now} времении')
+    send_mail.delay('Отчет об обработке документов', 'adikgk@mail.ru', 'Адилет Эстебес уулу', messages)

@@ -29,15 +29,15 @@
         <li class="nav-item dropdown-lg">
             <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="">
                 <i class="fa fa-rss"></i></a>
-            </li>
-        <li class="nav-item language">
+        </li>
+        {% comment %} <li class="nav-item language">
             <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="">
                 <i class="fa fa-language"></i></a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <a href=""><li class="dropdown-item"> <i class="flag-icon flag-icon-ru mr-2"></i> Русский</li></a>
                 <a href=""><li class="dropdown-item"> <i class="flag-icon flag-icon-kg mr-2"></i> Кыргызча</li></a>
             </ul>
-        </li>
+        </li> {% endcomment %}
         <li class="nav-item">
             <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
                 <span class="user-profile">
@@ -46,15 +46,17 @@
             </a>
         <ul class="dropdown-menu dropdown-menu-right">
             <li class="dropdown-item user-details">
-                <a href="{% url 'Profile' username=user %}">
+                <a href="{% url 'profile' pk=user.pk username=user.username %}">
                     <div class="media">
                         <div class="avatar">
-                            <img class="align-self-start mr-3" src="https://via.placeholder.com/110x110" alt="user avatar">
+                        {% if user.profile.avatar_image %}
+                            <img class="align-self-start mr-3" src="{{ user.profile.avatar_image.url }}" alt="user avatar">
+                        {% endif %}
                         </div>
                         <div class="media-body">
                             {% if user.profile %}
                                 <h6 class="mt-2 user-title">{{ user.profile.last_name }} {{ user.profile.first_name }}</h6>
-                                <p class="user-subtitle">{{ user.profile.itn }}</p>
+                                <p class="user-subtitle">{{ user.email }}</p>
                             {% else %}
                                 <h6 class="mt-2 user-title">Нет анкеты</h6>
                             {% endif %}
@@ -63,10 +65,10 @@
                 </a>
             </li>
             <li class="dropdown-divider"></li>
-                <a href=""><li class="dropdown-item"><i class="icon-envelope mr-2"></i> Входящие</li>
+                <a href="{% url 'inbox_doc' %}"><li class="dropdown-item"><i class="icon-envelope mr-2"></i> Входящие</li>
             </a>
             <li class="dropdown-divider"></li>
-                <a href="{% url 'Profile' username=user %}">
+                <a href="{% url 'profile' pk=user.pk username=user.username %}">
                 <li class="dropdown-item"><i class="icon-wallet mr-2"></i> Профиль</li>
             </a>
             <li class="dropdown-divider"></li>

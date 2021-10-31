@@ -32,7 +32,7 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
-                            {% if answer.movement.status == 'In_process' and answer.status == 'Waiting' %}
+                            {% if document.status == 'In_process' and answer.movement.status != 'Done' and answer.status == 'Waiting' %}
                                 <div class="col-12 text-center">
                                     <hr>
                                     <input type="hidden" name="reply" value="{{ answer.pk }}">

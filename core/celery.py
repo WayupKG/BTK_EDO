@@ -10,9 +10,11 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.autodiscover_tasks()
 
+app.conf.timezone = 'Asia/Bishkek'
+
 app.conf.beat_schedule = {
-    'processing-database-1': {
-        'task': 'home.tasks.processing_database',
-        'schedule': crontab(minute=0, hour=1),
+    'processing-document': {
+        'task': 'document.tasks.processing_document',
+        'schedule': crontab(minute=0, hour=3),
     }
 }

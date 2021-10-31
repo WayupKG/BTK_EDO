@@ -1,3 +1,4 @@
+import time
 import transliterate
 
 from django.contrib.auth.decorators import login_required
@@ -24,6 +25,8 @@ class CreateDocView(LoginRequiredMixin, FormView):
     form_class = CreateDocumentForm
     template_name = 'Document/create.html'
 
+    success_url = '/doc/shipped/'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['employees'] = Profile.active.all().select_related('position')
@@ -49,14 +52,15 @@ class CreateDocView(LoginRequiredMixin, FormView):
         if main_person == 0:
             profile = Profile.objects.get(pk=person)
             MovementOfDocument.objects.create(document=document, responsible=profile, is_main_person=True)  
-        super(CreateDocView, self).form_valid(form)
-        return redirect('detail-doc-view', slug=document.slug)
+        return super().form_valid(form)
 
 
 class CreateStatementRaportView(LoginRequiredMixin, FormView):
     """Создание Заявление и Рапорта"""
     form_class = CreateStatementRaportForm
     template_name = 'Document/StatementRaport/create.html'
+
+    success_url = '/doc/stats/shipped/'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -65,7 +69,7 @@ class CreateStatementRaportView(LoginRequiredMixin, FormView):
 
     def form_valid(self, form):
         statement = form.save(commit=False)
-        statement.author = self.request.user
+        statement.author = self.request.user.profile
         statement.type = self.request.POST.get('StatementRaport')
         statement.director = Profile.active.get(pk=self.request.POST.get('director'))
         statement.save()
@@ -111,6 +115,7 @@ def remove_inbox_doc(request, slug):
     try:
         doc = get_object_or_404(MovementOfDocument, document__slug=slug, responsible=request.user.profile)
         doc.open_view = True
+        doc.datetime_view = timezone.localtime()
         doc.save()
         return redirect('detail-doc-view', slug)
     except:
@@ -158,15 +163,17 @@ class InboxDocumentDetailView(LoginRequiredMixin, TemplateView):
 
     def post(self, *args, **kwargs):
         data = self.request.POST.get
-        movement = MovementOfDocument.objects.select_related('document__author').get(document__slug=self.kwargs.get('slug'), 
-                                                                             responsible=self.request.user.profile)
+        movement = MovementOfDocument.objects.select_related('document__author', 'responsible').get(document__slug=self.kwargs.get('slug'), 
+                                                                                                    responsible=self.request.user.profile)
         if movement.is_send_reply:
             reply = ReplyDocument.objects.create(document=movement.document, movement=movement, 
                                                  appointment=data('appointment'), description=data('body'))
             for file in self.request.FILES.getlist('files'):
                 FileReplyDocument.objects.create(movement=movement, reply=reply, file=file)
-            body = create_notification(movement=movement, appointment=data('appointment'))
-            Notification.objects.create(content_object=reply, body=body, user=movement.document.author, type='reply')
+            body = f'Отправлен ответ на документ с номером {movement.document.number}. Ответ отправил {movement.responsible.get_full_name()}. '\
+                    'Чтобы посмотреть ответ нажмите на эту ссылку '\
+                   f'<a href="{movement.document.get_absolute_url()}" class="btn btn-light px-5 font-weight-bold" style="font-size: 16px">Подробно</a>'
+            create_notification.delay('reply', reply.pk, reply.document.author.pk, reply.document.author.pk, body)
             movement.is_send_reply = False
             movement.save()
         context = self.get_context_data(**kwargs)
@@ -242,7 +249,7 @@ class RenderPDFStatement(LoginRequiredMixin, TemplateView):
                                                      Q(slug=slug), Q(author=self.request.user.profile) |
                                                      Q(director=self.request.user.profile) | 
                                                      Q(responsible=self.request.user.profile))
-        author = Profile.objects.select_related('account', 'position').get(account=statement.author)
+        author = Profile.objects.select_related('account', 'position').get(account=statement.author.account)
         html = render_to_string('Document/StatementRaport/render-pdf.html', {'statement': statement, 'author': author})
         response = HttpResponse(content_type='application/pdf')
         pdf_filename = f'{statement.type}-{transliterate.translit(f"{statement.number}", reversed=True)}.pdf'
@@ -280,18 +287,27 @@ class ShippedDocumentDetailView(LoginRequiredMixin, TemplateView):
                                                      'movement__responsible').get(pk=int(data('reply')), 
                                                                                   movement__pk=int(data('movement')), 
                                                                                   document__pk=int(data('document')))
-        if reply.status == 'Waiting':
+        if reply.document.status == 'In_process' and reply.status == 'Waiting':
             if data('accept') == 'to_accept':
                 reply.status = 'To_accept'
                 reply.movement.status = 'Done'
-                analiz_document.delay(reply.document.pk, reply.document.number)
-                body = ''
-                create_notification.delay('reply', reply.pk, reply.document.author.pk, reply.movement.responsible.pk, body)
+                body = f'{reply.document.author.position} - {reply.document.author.get_full_name()} '\
+                       f'принял ваш ответ отправленный на документ с номером {reply.document.number} <br>'\
+                       f'<a href="{reply.document.get_absolute_url_inbox()}" class="btn btn-light px-3 mt-3 font-weight-bold" style="font-size: 15px">Подробно</a>'
             elif data('accept') == 'not_accept':
                 reply.status = 'Not_accepted'
                 reply.movement.status = 'Not_completed'
                 reply.movement.is_send_reply = True
+                body = f'{reply.document.author.position} - {reply.document.author.get_full_name()} '\
+                       f'отклонил ваш ответ отправленный на документ с номером {reply.document.number}. '\
+                       f'Вы можете отправить ответ заново, до истечении срока исполнении. <br>'\
+                       f'<a href="{reply.document.get_absolute_url_inbox()}" class="btn btn-light px-3 mt-3 font-weight-bold" style="font-size: 15px">Подробно</a>'
+            create_notification.delay('reply', reply.pk, reply.document.author.pk, reply.movement.responsible.pk, body)
+            reply.movement.save()
             reply.save()
+            if data('accept') == 'to_accept':
+                analiz_document.delay(reply.document.pk, reply.document.number)
+                time.sleep(3)
         return self.render_to_response(self.get_context_data(**kwargs))
 
 

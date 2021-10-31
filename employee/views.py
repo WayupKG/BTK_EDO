@@ -1,40 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, CreateView, FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from home.tasks import send_register_mail
+from home.tasks import send_mail
 
-from .models import User, SettingsUser
+from .models import Profile, User, SettingsUser
 from .forms import UserForm
 
 
-@login_required
-def profile_view(request, username):
-    profile = get_object_or_404(User, account__username=username)
-    if request.method == 'POST':
-        data = request.POST.get
-        if data('form_btn') == 'settings':
-            profile.settings.is_mail_inbox = True if data('is_mail_inbox') == 'on' else False
-            profile.settings.is_mail_movement = True if data('is_mail_movement') == 'on' else False
-            profile.settings.is_mail_ad = True if data('is_mail_ad') == 'on' else False
-            profile.settings.save()
-            return redirect('Profile', username=request.user.username)
-        elif data('form_btn') == 'profile':
-            user = get_object_or_404(User, pk=request.user.pk)
-            user.email = data('email')
-            user.save()
-            profile.first_name = data('first_name')
-            profile.last_name = data('last_name')
-            profile.sur_name = data('sur_name')
-            profile.email = data('email')
-            profile.tel_number = data('phone')
-            profile.date_of_birth = data('date')
-            profile.itn = data('itn')
-            profile.body = data('body')
-            profile.save()
-            return redirect('Profile', username=request.user.username)
-    return render(request, 'Pages/profile.html', {'profile': profile})
 
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'Pages/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = Profile.objects.select_related('account').get(account__pk=kwargs.get('pk'), 
+                                                                account__username=kwargs.get('username'))
+        return context
 
 
 class Registration(FormView):
@@ -51,5 +34,8 @@ class Registration(FormView):
         profile.account = account
         SettingsUser.objects.create(user=account)    
         profile.save()
-        send_register_mail.delay(data('email'), data('password'), profile.last_name, profile.first_name,)
+        body = ['Вы успешно зарегистрированы на сайте edo.btk.kg — Электронный документооборот Бишкекского технического колледжа.',
+                'Для входа используйте данные ниже.', f'Email - {profile.email}', f'Пароль - {profile.password}']
+        send_mail.delay('Регистрация в электронном документообороте "EDO_BTK"', data('email'), 
+                        f'{profile.last_name} {profile.first_name}', body)
         return super(Registration, self).form_valid(form)

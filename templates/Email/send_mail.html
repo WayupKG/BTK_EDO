@@ -65,13 +65,12 @@
                                             <img src="https://btk.kg/static/images/edo_btk/EDOBTK.svg" alt="">
                                         </div>
                                         <div class="content">
-                                            <h1>Уважаемый(-ая) {{ user }}!</h1>
-                                            <p style="text-align: justify">
-                                                Вы успешно зарегистрированы на сайте <a href="http://edo.btk.kg/">edo.btk.kg</a> —  Электронный документооборот Бишкекского технического колледжа.<br> <br>
-                                                Для входа используйте данные ниже.<br>
-                                                Email - {{ email }}<br>
-                                                Пароль - {{ pass }}<br>
-                                            </p>
+                                            <h1>Уважаемый(-ая) {{ full_name }}!</h1>
+
+                                            {% for i in body %}
+                                                <p style="text-align: justify">{{ i|safe }}</p>
+                                            {% endfor %}
+
                                             <hr color="#fff">
                                             <p class="p" style="text-align: justify">C уважением, Администрация сайта <a href="http://edo.btk.kg/">edo.btk.kg</a>.</p>
                                         </div>

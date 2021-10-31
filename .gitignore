@@ -10,7 +10,7 @@ dist
 db.sqlite3
 
 venv
-
+celerybeat-schedule
 
 prod_settings.py
 local_settings.py

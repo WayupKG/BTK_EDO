@@ -16,6 +16,7 @@
                                 <th scope="col" class="datatable-nosort">Номер</th>
                                 <th scope="col" class="w-25 datatable-nosort">Ф.И.О</th>
                                 <th scope="col" class="w-75 datatable-nosort">Название документа</th>
+                                <th scope="col" class="datatable-nosort">Статус</th>
                                 <th scope="col" class="datatable-nosort">Назначение</th>
                                 <th scope="col" class="datatable-nosort">Дата</th>
                                 <th scope="col" class="datatable-nosort">Срок</th>
@@ -34,6 +35,7 @@
                                             </td>
                                             <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.author }}</a></td>
                                             <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.name|truncatechars:80 }}</a></td>
+                                            <td class="text-center"><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.status_v }}</a></td>
                                             <td class="text-center"><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.purposes_v }}</a></td>
                                             <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.created|date:'d-m-Y' }}</a></td>
                                             <td><a href="{% url 'remove_inbox_doc' slug=doc.document.slug %}">{{ doc.document.end_date|date:'d-m-Y' }}</a></td>
@@ -48,6 +50,7 @@
                                             </td>
                                             <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.author }}</a></td>
                                             <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.name|truncatechars:80 }}</a></td>
+                                            <td class="text-center"><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.status_v }}</a></td>
                                             <td class="text-center"><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.purposes_v }}</a></td>
                                             <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.created|date:'d-m-Y' }}</a></td>
                                             <td><a href="{% url 'detail-doc-view' slug=doc.document.slug %}">{{ doc.document.end_date|date:'d-m-Y' }}</a></td>
