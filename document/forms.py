@@ -1,7 +1,9 @@
 from django.forms import ModelForm, Select, Textarea, TextInput, DateInput, FileInput
+from django.utils import timezone
+
 from ckeditor_uploader.fields import RichTextUploadingField
 from .models import *
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 
 class BaseForm(ModelForm):
@@ -16,9 +18,9 @@ class CreateDocumentForm(BaseForm):
         model = Document
         fields = ['name', 'body', 'end_date', 'purposes']
         widgets = {
-            'end_date': DateInput(attrs={'type': 'date', 'min': datetime.now().strftime("%Y-%m-%d"), 
-                                         'max': (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d"),
-                                         'value': datetime.now().strftime("%Y-%m-%d"), 'required': ''}),
+            'end_date': DateInput(attrs={'type': 'date', 'min': timezone.localtime().strftime("%Y-%m-%d"), 
+                                         'max': (timezone.localtime() + timedelta(days=30)).strftime("%Y-%m-%d"),
+                                         'value': timezone.localtime().strftime("%Y-%m-%d"), 'required': ''}),
         }
 
 

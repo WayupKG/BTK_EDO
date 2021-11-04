@@ -32,7 +32,7 @@
                     {% if res != 0 %}
                         <small class="badge float-right badge-warning">+ {{ res }}</small>
                     {% else %}
-                        <i class="fa fa-angle-left pull-right">
+                        <i class="fa fa-angle-left pull-right"></i>
                     {% endif %}
                 </a>
                 <ul class="sidebar-submenu ml-3">
@@ -50,20 +50,21 @@
                             <a href="{% url 'inbox_stat' %}">
                         {% endif %}                
                         <i class="zmdi zmdi-dot-circle-alt"></i>Заявление / Рапорт 
-                            {% if stat_count != 0 %}
-                                <small class="badge float-right badge-warning">+ {{ stat_count }}</small>
-                            {% endif %}
-                        </a></li>
+                        {% if stat_count != 0 %}
+                            <small class="badge float-right badge-warning">+ {{ stat_count }}</small>
+                        {% endif %}
+                        </a>
+                    </li>
                 </ul>
             {% else %}
-                <li>
+            
                     <a href="{% url 'inbox_doc' %}" class="active"><i class="fa fa-envelope-o"></i> 
                         <span>Входящие</span>
                         {% if inbox_count != 0 %}
                             <small class="badge float-right badge-warning">+ {{ inbox_count }}</small>
                         {% endif %}
                     </a>
-                </li>
+                
             {% endif %}
         </li>
         <li>
