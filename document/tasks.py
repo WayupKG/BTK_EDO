@@ -58,10 +58,13 @@ def processing_document():
     date_now = timezone.localtime()
     documents = Document.objects.filter(status='In_process').select_related('author')
     messages = [f'Дата - {timezone.localtime().strftime("%d-%m-%Y")}']
-    count_ = 1
+    count_ = 0
     for document in documents:
         in_process, not_completed, done, is_main_person = 0, 0, 0, 'Errors'
-        if document.end_date.strftime("%d-%m-%Y") < date_now.strftime("%d-%m-%Y"):
+        new_day,  new_month, new_year = int(timezone.localtime().strftime("%d")), int(timezone.localtime().strftime("%m")), int(timezone.localtime().strftime("%Y"))
+        doc_day, doc_month, doc_year = int(document.end_date.strftime("%d")), int(document.end_date.strftime("%m")), int(document.end_date.strftime("%Y"))
+        
+        if (new_year == doc_year) and (new_month >= doc_month) and (new_day > doc_day):
             movements = MovementOfDocument.objects.filter(document=document)
             for movement in movements:
                 in_process += 1 if movement.status == 'In_process' else 0

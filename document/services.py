@@ -4,8 +4,18 @@ from django.utils.text import slugify
 
 
 def gen_slug(number, name):
+    world = ''
     try:
-        slug = transliterate.translit(f"{number}-{name}", reversed=True)
+        for i in name.lower():
+            if i == 'ң':
+                world += 'н'
+            elif i == 'ү':
+                world += 'у'
+            elif i == 'ө':
+                world += 'о'
+            else:
+                world += i
+        slug = transliterate.translit(f"{number}-{world}", reversed=True)
     except:
         slug = f"{number}-{name}"
     return slugify(slug, allow_unicode=True)

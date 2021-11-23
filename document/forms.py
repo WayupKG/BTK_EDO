@@ -18,9 +18,7 @@ class CreateDocumentForm(BaseForm):
         model = Document
         fields = ['name', 'body', 'end_date', 'purposes']
         widgets = {
-            'end_date': DateInput(attrs={'type': 'date', 'min': timezone.localtime().strftime("%Y-%m-%d"), 
-                                         'max': (timezone.localtime() + timedelta(days=30)).strftime("%Y-%m-%d"),
-                                         'value': timezone.localtime().strftime("%Y-%m-%d"), 'required': ''}),
+            'end_date': DateInput(attrs={'type': 'date', 'onload': 'validDate()', 'required': ''}),
         }
 
 
