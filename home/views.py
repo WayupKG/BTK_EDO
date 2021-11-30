@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
 from document.models import Document, MovementOfDocument, Statement
-from employee.models import User
+from employee.models import User, Profile
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -37,5 +37,5 @@ class AddressBookView(LoginRequiredMixin, TemplateView):
     template_name = 'Pages/address_book.html'
 
     def get(self, request, *args, **kwargs):
-        profiles = User.objects.all()
+        profiles = Profile.objects.all().select_related('account')
         return render(request, self.template_name, {'profiles': profiles})

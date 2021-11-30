@@ -56,7 +56,7 @@ class Statement(models.Model):
     author = models.ForeignKey('employee.Profile', verbose_name='Автор', on_delete=models.PROTECT, related_name='statements_author', null=True)
     type = models.CharField('Тип документа', max_length=20, choices=TYPE, default='Document')
     body = RichTextUploadingField('Описание документа')
-    slug = models.SlugField(max_length=150, null=True, blank=True)
+    slug = models.SlugField(max_length=255, null=True, blank=True)
     status = models.CharField('Статус', max_length=20, choices=STATUS_STATEMENT, default='Submitted')
     director = models.ForeignKey('employee.Profile', verbose_name='Руководитель', on_delete=models.PROTECT, related_name='statements', null=True, blank=True)
     responsible = models.ForeignKey('employee.Profile', verbose_name='Ответственный', on_delete=models.PROTECT, related_name='statements_responsible', null=True, blank=True)
@@ -80,7 +80,7 @@ class Statement(models.Model):
     def save(self, *args, **kwargs):
         super(Statement, self).save(*args, **kwargs)
         self.number = create_number(self.pk)
-        self.slug = gen_slug(self.number, self.author)
+        self.slug = gen_slug(self.number, self.author.get_full_name())
         if self.status == 'Done':
             self.is_editor_author = False
             self.is_editor_director = False
