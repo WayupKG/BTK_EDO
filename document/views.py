@@ -225,12 +225,12 @@ class StatementDetailView(LoginRequiredMixin, TemplateView):
     template_name = 'Document/StatementRaport/Detail/base.html'
 
     def get(self, *args, **kwargs):
-        if self.request.user.is_statement:
-            doc = Statement.objects.select_related('author', 'director', 'responsible').get(
-                                                    slug=self.kwargs.get('slug'), 
-                                                    responsible=self.request.user.profile)
+        doc = Statement.objects.select_related('author', 'director', 'responsible').get(
+                                                    slug=self.kwargs.get('slug'))
+        if self.request.user == doc.responsible:
+            print('asdasdasd')
         else:
-            return HttpResponseNotFound()
+            print(f'{self.request.user} == {doc}')
         return self.render_to_response(self.get_context_data(doc=doc, responsible=True))
 
 
@@ -285,7 +285,7 @@ class ShippedDocumentDetailView(LoginRequiredMixin, TemplateView):
         data = self.request.POST.get
         reply = ReplyDocument.objects.select_related('document__author', 
                                                      'movement__responsible').get(pk=int(data('reply')), 
-                                                                                  movement__pk=int(data('movement')), 
+                                                                                  movement__pk=int(data('movement')),
                                                                                   document__pk=int(data('document')))
         if reply.document.status == 'In_process' and reply.status == 'Waiting':
             if data('accept') == 'to_accept':
@@ -307,7 +307,6 @@ class ShippedDocumentDetailView(LoginRequiredMixin, TemplateView):
             reply.save()
             if data('accept') == 'to_accept':
                 analiz_document.delay(reply.document.pk, reply.document.number)
-                time.sleep(3)
         return self.render_to_response(self.get_context_data(**kwargs))
 
 
@@ -319,17 +318,6 @@ class ShippedStatView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["docs"] = Statement.objects.filter(author=self.request.user.profile)
         return context
-
-
-# class ToAcceptReplyDocument(LoginRequiredMixin, View):
-#     """"""
-#     def get
-
-
-
-
-
-
 
 
 

@@ -2,7 +2,7 @@ import os
 
 from django.db import models
 from django.db.models.query_utils import select_related_descend
-from django.forms import widgets
+from django.forms import model_to_dict, widgets
 from django.urls import reverse
 from ckeditor_uploader.fields import RichTextUploadingField
 
@@ -60,7 +60,7 @@ class Statement(models.Model):
     status = models.CharField('Статус', max_length=20, choices=STATUS_STATEMENT, default='Submitted')
     director = models.ForeignKey('employee.Profile', verbose_name='Руководитель', on_delete=models.PROTECT, related_name='statements', null=True, blank=True)
     responsible = models.ForeignKey('employee.Profile', verbose_name='Ответственный', on_delete=models.PROTECT, related_name='statements_responsible', null=True, blank=True)
-    
+
     is_editor_author = models.BooleanField(default=False)
     is_editor_director = models.BooleanField(default=True)
     is_editor_responsible = models.BooleanField(default=False)
